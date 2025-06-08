@@ -1,0 +1,216 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+#chat-container {
+    width: 80%;
+    max-width: 600px;
+    height: 90vh;
+    max-height: 700px; /* Max height to prevent it from being too tall on large screens */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ensures child elements like input area don't break the border radius */
+}
+
+#message-area {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    border-bottom: 1px solid #eeeeee;
+    display: flex;
+    flex-direction: column; /* Ensure messages stack vertically */
+}
+
+/* Basic message styling */
+.message {
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 75%;
+    line-height: 1.4;
+    display: inline-block; /* To make the background fit the content */
+    word-wrap: break-word; /* Ensure long words don't overflow */
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto; /* Align to the right */
+    border-bottom-right-radius: 5px; /* Give a slightly different shape */
+    text-align: left; /* Ensure text within bubble is left-aligned */
+}
+
+.ai-message {
+    background-color: #e9e9eb;
+    color: #333333;
+    margin-right: auto; /* Align to the left */
+    border-bottom-left-radius: 5px; /* Give a slightly different shape */
+    text-align: left; /* Ensure text within bubble is left-aligned */
+}
+
+#input-area {
+    display: flex;
+    align-items: center; /* Vertically align items in the input bar */
+    padding: 12px;
+    border-top: 1px solid #eeeeee;
+    background-color: #f9f9f9;
+}
+
+#image-upload-icon {
+    font-size: 1.8em; /* Make icon a bit larger */
+    margin-right: 12px;
+    color: #555555;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+#image-upload-icon:hover {
+    color: #007bff;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid #dddddd;
+    border-radius: 20px; /* More rounded input field */
+    margin-right: 10px;
+    font-size: 1em;
+    outline: none; /* Remove default focus outline */
+    transition: border-color 0.2s ease-in-out;
+}
+
+#user-input:focus {
+    border-color: #007bff;
+}
+
+#send-button {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20px; /* More rounded button */
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#send-button:hover {
+    background-color: #0056b3;
+}
+
+#tts-button {
+    padding: 10px 12px; /* Adjust padding to make it look good as an icon button */
+    background-color: #6c757d; /* A neutral grey */
+    color: white;
+    border: none;
+    border-radius: 20px; /* Consistent rounding */
+    cursor: pointer;
+    font-size: 1.2em; /* Slightly larger for icon visibility */
+    margin-left: 8px; /* Space from send button */
+    transition: background-color 0.2s ease-in-out;
+    line-height: 1; /* Ensure icon is centered if it has descenders/ascenders */
+}
+
+#tts-button:hover {
+    background-color: #545b62; /* Darker grey on hover */
+}
+
+/* Image Upload and Preview Styles */
+#image-upload-label { /* The label wrapping the icon */
+    cursor: pointer; /* Make the label itself clickable */
+}
+
+#image-upload-icon {
+    /* Styles already defined, ensure cursor: pointer if not on label */
+    cursor: pointer;
+}
+
+#image-preview-area {
+    padding: 10px;
+    min-height: 50px; /* Minimum height even when empty */
+    max-height: 150px; /* Max height for the preview area */
+    text-align: center; /* Center the image preview */
+    border-bottom: 1px solid #eeeeee; /* Separator like message area */
+    position: relative; /* For positioning the remove button */
+    display: flex; /* Use flex to center content if needed */
+    justify-content: center;
+    align-items: center;
+}
+
+#image-preview-area img {
+    max-width: 100%;
+    max-height: 120px; /* Max height of the image itself */
+    border-radius: 4px;
+    border: 1px solid #dddddd;
+}
+
+#image-preview-area .remove-preview-button {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#image-preview-area .remove-preview-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Styling for structured recipe content */
+.ai-message .recipe-text-part {
+    margin-bottom: 10px; /* Space between text blocks */
+    line-height: 1.6; /* Improve readability of recipe text */
+}
+
+.ai-message .recipe-text-part:last-child {
+    margin-bottom: 0; /* No margin for the last text part in a sequence */
+}
+
+.ai-message .recipe-image-part {
+    max-width: 90%;
+    display: block; /* Make image a block element */
+    margin: 15px auto; /* Center image with space around it */
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Styling for error messages from AI */
+.ai-message.error-message span.error-text {
+    color: #721c24; /* Dark red color for error text */
+    background-color: #f8d7da; /* Light red background for error messages */
+    border: 1px solid #f5c6cb; /* Red border */
+    padding: 10px;
+    border-radius: 4px;
+    display: block; /* Make the span take full width of the message bubble */
+}
+
+.ai-message .system-info,
+.ai-message .fallback-text {
+    font-style: italic;
+    color: #555;
+    padding: 8px 12px;
+    border-radius: 15px; /* Match general message style */
+    background-color: #f0f0f0; /* Slightly different background */
+    display: inline-block; /* Fit content */
+    margin-top: 5px;
+}
