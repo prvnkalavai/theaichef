@@ -3,6 +3,10 @@ from flask import Flask, render_template, request, jsonify, current_app # Added 
 import google.generativeai as genai
 from google.generativeai import types as genai_types
 from google.api_core import exceptions as google_exceptions # For specific Google API errors
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -78,7 +82,7 @@ def send_message_route():
 
     response = None # Initialize response to None for broader scope in logging
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        model = genai.GenerativeModel('gemini-2.0-flash-preview-image-generation')
         response = model.generate_content(prompt) # Assign to response variable
 
         # 4. Log Raw Gemini Response (or key parts)
