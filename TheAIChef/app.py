@@ -3,6 +3,10 @@ from flask import Flask, render_template, request, jsonify, current_app # Added 
 import google.generativeai as genai
 from google.generativeai import types as genai_types
 from google.api_core import exceptions as google_exceptions # For specific Google API errors
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -72,8 +76,8 @@ def send_message_route():
 
     response = None
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
-
+        model = genai.GenerativeModel('gemini-2.0-flash-preview-image-generation')
+        response = model.generate_content(prompt) # Assign to response variable
         generation_config_with_images = genai_types.GenerationConfig(
             response_modalities=['TEXT', 'IMAGE']
         )
