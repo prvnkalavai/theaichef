@@ -76,12 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSendMessage() {
+        console.log("handleSendMessage called.");
         const messageText = userInput.value.trim();
         const imagePreview = imagePreviewArea.querySelector('img');
+        console.log("User input text:", messageText);
+        console.log("Image preview present:", !!imagePreview);
 
         if (messageText === '' && !imagePreview) {
-            // Optionally, provide feedback to the user if they try to send an empty message
-            // appendMessageToArea("Please type a message or upload an image.", 'ai-message system-info', false);
+            console.log("Empty message and no image, not sending.");
             return;
         }
 
@@ -89,40 +91,48 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
         userInput.focus();
 
-        // Show a thinking indicator
         appendMessageToArea("The AI Chef is thinking...", 'ai-message system-info', false, true);
 
+        const payload = { message: messageText, image_present: !!imagePreview };
+        console.log("Sending payload to /send_message:", JSON.stringify(payload));
 
         fetch('/send_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message: messageText, image_present: !!imagePreview }),
+            body: JSON.stringify(payload),
         })
         .then(response => {
-            // Remove thinking indicator once response starts processing
+            console.log("Raw fetch response received:", response);
             removeThinkingIndicator();
             if (!response.ok) {
                 return response.json().then(errData => {
+                    console.error("Parsed error data from !response.ok:", errData);
                     throw new Error(errData.error || `Server error (${response.status})`);
-                }).catch(() => {
-                    throw new Error(`Server error (${response.status}) - Could not parse error details.`);
+                }).catch(jsonParseError => {
+                    console.error("Error parsing !response.ok JSON or not a JSON error:", jsonParseError);
+                    throw new Error(`Server error (${response.status}) - Could not parse error details. Status text: ${response.statusText}`);
                 });
             }
             return response.json();
         })
         .then(data => {
-            if (data.error) { // Backend explicitly sent an error object
+            console.log("Parsed JSON data from backend:", data);
+
+            if (data.error) {
+                console.error("Backend reported an error:", data.error);
                 appendMessageToArea(data.error, 'ai-message error-message', false);
             } else if (data.structured_recipe && Array.isArray(data.structured_recipe)) {
                 if (data.structured_recipe.length === 0) {
+                     console.warn("Received empty structured_recipe array.");
                      appendMessageToArea("I couldn't come up with anything for that. Try asking something else!", 'ai-message fallback-text', false);
                 } else {
                     const aiMessageContainer = document.createElement('div');
                     aiMessageContainer.classList.add('message', 'ai-message');
-
-                    data.structured_recipe.forEach(part => {
+                    console.log("Processing structured recipe parts:", data.structured_recipe.length);
+                    data.structured_recipe.forEach((part, index) => {
+                        console.log(`Processing part ${index}:`, part);
                         if (part.type === 'text' && part.content) {
                             const textElement = document.createElement('div');
                             textElement.innerHTML = part.content.replace(/\n/g, '<br>');
@@ -139,13 +149,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     messageArea.appendChild(aiMessageContainer);
                 }
             } else {
+                console.warn("Received unclear or unexpected response structure from AI:", data);
                 appendMessageToArea("Received an unclear response from the AI. Please try again.", 'ai-message error-message', false);
             }
         })
-        .catch(error => { // Catches network errors and errors thrown from .then()
-            removeThinkingIndicator(); // Ensure thinking indicator is removed on error too
-            console.error('Error sending/receiving message:', error);
-            appendMessageToArea(error.message || 'A network error occurred, or the AI Chef is unavailable. Please try again.', 'ai-message error-message', false);
+        .catch(error => {
+            removeThinkingIndicator();
+            console.error('Fetch caught an error. Full error object:', error);
+
+            let displayErrorMessage = 'An error occurred. Please try again.'; // Default message
+            if (error && error.message) {
+                displayErrorMessage = error.message;
+                console.log('Using error.message for display:', displayErrorMessage); // Changed to console.log for clarity
+            } else {
+                console.warn('Error object did not have a .message property or it was empty. Using default error message.'); // Changed to console.warn
+            }
+
+            appendMessageToArea(displayErrorMessage, 'ai-message error-message', false);
         })
         .finally(() => {
             if (imagePreview) {
@@ -157,16 +177,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function removeThinkingIndicator() {
+        console.log("Attempting to remove thinking indicator.");
         const thinkingMessage = messageArea.querySelector('.system-info');
         if (thinkingMessage && thinkingMessage.textContent.includes("thinking...")) {
             thinkingMessage.remove();
+            console.log("Thinking indicator removed.");
+        } else {
+            console.log("Thinking indicator not found or already removed.");
         }
     }
 
     function appendMessageToArea(textOrHtml, className, isUserMessage, isSystemInfo = false) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message', className);
-        if (isSystemInfo) { // For "Thinking..." or other system messages
+        if (isSystemInfo) {
             messageDiv.classList.add('system-info');
         }
 
@@ -178,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(className.includes('error-message')){
                 contentSpan.classList.add('error-text');
             } else if (className.includes('fallback-text') || className.includes('system-info')) {
-                contentSpan.classList.add(className.split(' ')[1]); // e.g., 'fallback-text' or 'system-info'
+                contentSpan.classList.add(className.split(' ')[1]);
             }
         }
         messageDiv.appendChild(contentSpan);
