@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AI Chef</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="chat-container">
+        <div id="message-area">
+            <!-- Messages will be dynamically added here by JavaScript -->
+        </div>
+
+        <div id="image-preview-area">
+            <!-- Image preview will be inserted here by JS -->
+        </div>
+
+        <div id="input-area">
+            <label for="image-upload-input" id="image-upload-label" title="Upload an image">
+                <span id="image-upload-icon">📷</span>
+            </label>
+            <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+
+            <input type="text" id="user-input" placeholder="Type your message or ingredients...">
+            <button id="send-button">Send</button>
+            <button id="tts-button" title="Read last AI message aloud">🔊</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
